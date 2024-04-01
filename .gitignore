@@ -1,0 +1,6 @@
+# created by virtualenv automatically
+/bin
+/flights-batch
+/lib
+/share
+pyvenv.cfg
