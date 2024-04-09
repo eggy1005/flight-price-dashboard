@@ -9,15 +9,14 @@ import sys
 from confluent_kafka import Producer
 from datetime import datetime, timedelta
 
-
 logging.basicConfig(
-  format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-  datefmt='%Y-%m-%d %H:%M:%S',
-  level=logging.INFO,
-  handlers=[
-      logging.FileHandler("flight_producer.log"),
-      logging.StreamHandler(sys.stdout)
-  ]
+    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=logging.INFO,
+    handlers=[
+        logging.FileHandler("flight_producer.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
 )
 
 logger = logging.getLogger()
@@ -25,6 +24,7 @@ logger = logging.getLogger()
 DEPARTURE = ['NEWYORK', 'LONDON', 'HONGKONG', 'TOKYO']
 ARRIVAL = ['PARIS', 'BARCELONA', 'DUBAI', 'CAIRO']
 USD = 'USD'
+
 
 class ProducerCallback:
     def __init__(self, record, log_success=False):
@@ -60,7 +60,7 @@ def main(args):
         is_tenth = i % 10 == 0
 
         flight_price_usd = {
-            'FLIGHTTIME': str(datetime.now() + timedelta(days= random.randint(1, 30))),
+            'FLIGHTTIME': str(datetime.now() + timedelta(days=random.randint(1, 30))),
             'DEPARTURE': random.choice(DEPARTURE),
             'ARRIVAL': random.choice(ARRIVAL),
             'PRICE_USD': random.randrange(100, 1000),
@@ -68,12 +68,12 @@ def main(args):
         }
         producer.produce(topic=args.topic,
                          value=json.dumps(flight_price_usd),
-                        on_delivery=ProducerCallback(flight_price_usd, log_success=is_tenth))
+                         on_delivery=ProducerCallback(flight_price_usd, log_success=is_tenth))
 
         if is_tenth:
             producer.poll(1)
             time.sleep(5)
-            i = 0 # no need to let i grow unnecessarily large
+            i = 0  # no need to let i grow unnecessarily large
 
         i += 1
 

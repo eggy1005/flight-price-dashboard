@@ -48,12 +48,33 @@ def consume_data():
 
     tbl_env.execute_sql(src_ddl)
 
+    src_ddl = """
+        CREATE TABLE HOTELPRICE (
+            CITY STRING,
+            PRICE_USD INT,
+            CURRENCY STRING,
+            proctime AS PROCTIME()
+        ) WITH (
+            'connector' = 'kafka',
+            'topic' = 'hotel-price-usd',
+            'properties.bootstrap.servers' = 'localhost:9092',
+            'properties.group.id' = 'flight-usd',
+            'format' = 'json',
+            'scan.startup.mode' = 'earliest-offset',    
+            'properties.auto.offset.reset' = 'earliest'
+        )
+    """
+
+    tbl_env.execute_sql(src_ddl)
+
     # create and initiate loading of source Table
     tbl = tbl_env.from_path('FLIGHTPRICE')
+    hotel_tbl = tbl_env.from_path('HOTELPRICE')
 
 
     print('\nSource Schema')
     tbl.print_schema()
+    hotel_tbl.print_schema()
 
     # sql = """
     # SELECT * FROM FLIGHTPRICE """
@@ -61,41 +82,45 @@ def consume_data():
     #####################################################################
     # Define Tumbling Window Aggregate Calculation (Seller Sales Per Minute)
     #####################################################################
-    average_sql_processor = """
-    SELECT
-    DEPARTURE, ARRIVAL, AVG(PRICE_USD) AS AVERAGE_PRICE, CURRENCY
-    FROM
-    FLIGHTPRICE
-    GROUP BY DEPARTURE, ARRIVAL, CURRENCY;
-    """
-    average_price_tbl = tbl_env.sql_query(average_sql_processor)
 
-    tbl_env.execute_sql(average_sql_processor).print()
-    print('\nProcess Sink Schema')
-    average_price_tbl.print_schema()
 
     # ###############################################################
     # # Create Kafka Sink Table
     # ###############################################################
-    # sink_ddl = """
-    #     CREATE TABLE FLIGHTPRICE_AVG (
-    #         DEPARTURE STRING,
-    #         ARRIVAL STRING,
-    #         AVERAGE_PRICE INT,
-    #         CURRENCY STRING
-    #     ) WITH (
-    #         'connector' = 'kafka',
-    #         'topic' = 'flight-price-average-usd',
-    #         'properties.bootstrap.servers' = 'localhost:9092',
-    #         'format' = 'json'
-    #     )
-    # """
-    # tbl_env.execute_sql(sink_ddl)
+    sink_ddl = """
+        CREATE TABLE FLIGHT_HOTEL_PRICE_COMBINED (
+            DEPARTURE STRING,
+            ARRIVAL STRING,
+            TOTAL_PRICE INT,
+            CURRENCY STRING,
+            primary key (DEPARTURE, ARRIVAL, CURRENCY) NOT ENFORCED
+        ) WITH (
+            'connector' = 'upsert-kafka',
+            'topic' = 'flight_hotel_price_combined',
+            'properties.bootstrap.servers' = 'localhost:9092',
+            'key.format' = 'json',
+            'value.format' = 'json'
+        )
+    """
+    tbl_env.execute_sql(sink_ddl)
 
+    total_price_query = """
+    INSERT INTO FLIGHT_HOTEL_PRICE_COMBINED
+    SELECT
+    DEPARTURE, ARRIVAL, min(F.PRICE_USD + H.PRICE_USD), F.CURRENCY AS TOTAL_PRICE
+    FROM
+    FLIGHTPRICE F
+    JOIN HOTELPRICE H 
+    ON F.ARRIVAL = H.CITY
+    GROUP BY DEPARTURE, ARRIVAL, F.CURRENCY;
+    """
+    average_price_tbl = tbl_env.execute_sql(total_price_query)
+
+    tbl_env.execute_sql(total_price_query).print()
+    print('\nProcess Sink Schema')
+    average_price_tbl.print_schema()
     # write time windowed aggregations to sink table
-    # average_price_tbl.execute_insert('FLIGHTPRICE_AVG').wait()
-
-
+    average_price_tbl.execute_insert('FLIGHT_HOTEL_PRICE_COMBINED').wait()
 
 
 if __name__ == '__main__':
