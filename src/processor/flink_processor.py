@@ -2,9 +2,9 @@ import os
 
 from pyflink.datastream import StreamExecutionEnvironment
 from pyflink.table import StreamTableEnvironment, EnvironmentSettings
-# from pyflink.datastream.connectors.kafka import FlinkKafkaProducer
 
-def main():
+
+def consume_data():
     # Create streaming environment
     env = StreamExecutionEnvironment.get_execution_environment()
 
@@ -18,7 +18,7 @@ def main():
 
     # add kafka connector dependency
     kafka_jar = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                            'flink-sql-connector-kafka-3.1.0-1.18.jar')
+                             'flink-sql-connector-kafka-3.1.0-1.18.jar')
 
     tbl_env.get_config()\
             .get_configuration()\
@@ -99,4 +99,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    consume_data()
