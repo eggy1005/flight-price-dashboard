@@ -1,0 +1,96 @@
+{
+  "namespace": "flight",
+  "name": "flight_price",
+  "type": "record",
+  "fields": [
+    {
+      "name": "airline",
+      "type": {
+        "type": "string",
+        "arg.properties": {
+          "options": [
+            "British Airways",
+            "Easyjet",
+            "Ryanair",
+            "Emirates",
+            "EVA",
+            "Japan Airlines",
+            "Wizz Air",
+            "United Airlines",
+            "Korean Air"
+          ]
+        }
+      }
+    },
+    {
+      "name": "flightno",
+      "type": {
+        "type": "int",
+        "arg.properties": {
+          "range": {
+            "min": 1,
+            "max": 500
+          }
+        }
+      }
+    },
+    {
+      "name": "route",
+      "type": {
+        "type": "string",
+        "arg.properties": {
+          "options": [
+            "Hong Kong-London",
+            "Hong Kong-New York",
+            "Hong Kong-Paris",
+            "New York-London",
+            "New York-New York",
+            "New York-Paris",
+            "London-Hong Kong",
+            "London-New York",
+            "London-Paris"
+          ]
+        }
+      }
+    },
+    {
+      "name": "price",
+      "type": {
+        "type": "double",
+        "arg.properties": {
+          "range": {
+            "min": 100,
+            "max": 500
+          }
+        }
+      }
+    },
+    {
+      "name": "currency",
+      "type": {
+        "type": "string",
+        "arg.properties": {
+          "options": [
+            "HKD",
+            "GBP",
+            "EUR",
+            "USD"
+          ]
+        }
+      }
+    },
+    {
+      "name": "update_timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis",
+        "arg.properties": {
+          "iteration": {
+            "start": 1609459200000,
+            "step": 100000
+          }
+        }
+      }
+    }
+  ]
+}
