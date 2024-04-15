@@ -4,73 +4,22 @@
   "type": "record",
   "fields": [
     {
-      "name": "name_rating",
+      "name": "name_rating_city_country",
       "type": {
-        "type": "record",
-        "name": "name_rating",
-        "fields": [
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "star_ratings",
-            "type": "double"
-          },
-          {
-            "name": "city_country",
-            "type": "string"
-          }
-        ]
-      },
-      "arg.properties": {
-        "options": [
-          {
-            "name": "Harbour Grand Kowloon",
-            "star_ratings": 4.5,
-            "city_country": "Hong Kong, China"
-          },
-          {
-            "name": "The Peninsula Hong Kong",
-            "star_ratings": 5.0,
-            "city_country": "Hong Kong, China"
-          },
-          {
-            "name": "Park Hotel Hong Kong",
-            "star_ratings": 4.0,
-            "city_country": "Hong Kong, China"
-          },
-          {
-            "name": "The Plaza",
-            "star_ratings": 5.0,
-            "city_country": "New York, USA"
-          },
-          {
-            "name": "Hotel Chelsea",
-            "star_ratings": 4.0,
-            "city_country": "New York, USA"
-          },
-          {
-            "name": "The Bowery Hotel",
-            "star_ratings": 4.5,
-            "city_country": "New York, USA"
-          },
-          {
-            "name": "The Savoy",
-            "star_ratings": 5.0,
-            "city_country": "London, UK"
-          },
-          {
-            "name": "The Goring",
-            "star_ratings": 5.0,
-            "city_country": "London, UK"
-          },
-          {
-            "name": "Kensington Hotel",
-            "star_ratings": 4.0,
-            "city_country": "London, UK"
-          }
-        ]
+        "type": "string",
+        "arg.properties": {
+          "options": [
+            "Harbour Grand Kowloon_4.5_Hong Kong_China",
+            "The Peninsula Hong Kong_5_Hong Kong_China",
+            "Park Hotel Hong Kong_4_Hong Kong_China",
+            "The Plaza_5_New York_USA",
+            "Hotel Chelsea_4_New York_USA",
+            "The Bowery Hotel_4.5_New York_USA",
+            "The Savoy_5_London_UK",
+            "The Goring_5_London_UK",
+            "Kensington Hotel_4_London_UK"
+          ]
+        }
       }
     },
     {
@@ -94,6 +43,19 @@
             "true",
             "false"
           ]
+        }
+      }
+    },
+    {
+      "name": "update_timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis",
+        "arg.properties": {
+          "iteration": {
+            "start": 1609459200000,
+            "step": 100000
+          }
         }
       }
     }
