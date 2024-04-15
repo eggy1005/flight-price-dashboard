@@ -1,56 +1,76 @@
 {
-  "namespace": "flight",
-  "name": "flight_price",
+  "namespace": "hotel",
+  "name": "hotel_price",
   "type": "record",
   "fields": [
     {
-      "name": "airline",
+      "name": "name_rating",
       "type": {
-        "type": "string",
-        "arg.properties": {
-          "options": [
-            "British Airways",
-            "Easyjet",
-            "Ryanair",
-            "Emirates",
-            "EVA",
-            "Japan Airlines",
-            "Wizz Air",
-            "United Airlines",
-            "Korean Air"
-          ]
-        }
-      }
-    },
-    {
-      "name": "flightno",
-      "type": {
-        "type": "int",
-        "arg.properties": {
-          "range": {
-            "min": 1,
-            "max": 500
+        "type": "record",
+        "name": "name_rating",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "star_ratings",
+            "type": "double"
+          },
+          {
+            "name": "city_country",
+            "type": "string"
           }
-        }
-      }
-    },
-    {
-      "name": "route",
-      "type": {
-        "type": "string",
-        "arg.properties": {
-          "options": [
-            "Hong Kong-London",
-            "Hong Kong-New York",
-            "Hong Kong-Paris",
-            "New York-London",
-            "New York-New York",
-            "New York-Paris",
-            "London-Hong Kong",
-            "London-New York",
-            "London-Paris"
-          ]
-        }
+        ]
+      },
+      "arg.properties": {
+        "options": [
+          {
+            "name": "Harbour Grand Kowloon",
+            "star_ratings": 4.5,
+            "city_country": "Hong Kong, China"
+          },
+          {
+            "name": "The Peninsula Hong Kong",
+            "star_ratings": 5.0,
+            "city_country": "Hong Kong, China"
+          },
+          {
+            "name": "Park Hotel Hong Kong",
+            "star_ratings": 4.0,
+            "city_country": "Hong Kong, China"
+          },
+          {
+            "name": "The Plaza",
+            "star_ratings": 5.0,
+            "city_country": "New York, USA"
+          },
+          {
+            "name": "Hotel Chelsea",
+            "star_ratings": 4.0,
+            "city_country": "New York, USA"
+          },
+          {
+            "name": "The Bowery Hotel",
+            "star_ratings": 4.5,
+            "city_country": "New York, USA"
+          },
+          {
+            "name": "The Savoy",
+            "star_ratings": 5.0,
+            "city_country": "London, UK"
+          },
+          {
+            "name": "The Goring",
+            "star_ratings": 5.0,
+            "city_country": "London, UK"
+          },
+          {
+            "name": "Kensington Hotel",
+            "star_ratings": 4.0,
+            "city_country": "London, UK"
+          }
+        ]
       }
     },
     {
@@ -66,29 +86,14 @@
       }
     },
     {
-      "name": "currency",
+      "name": "breakfast_included",
       "type": {
         "type": "string",
         "arg.properties": {
           "options": [
-            "HKD",
-            "GBP",
-            "EUR",
-            "USD"
+            "true",
+            "false"
           ]
-        }
-      }
-    },
-    {
-      "name": "update_timestamp",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis",
-        "arg.properties": {
-          "iteration": {
-            "start": 1609459200000,
-            "step": 100000
-          }
         }
       }
     }
