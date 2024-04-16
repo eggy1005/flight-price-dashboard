@@ -1,0 +1,63 @@
+{
+  "namespace": "hotel",
+  "name": "hotel_price",
+  "type": "record",
+  "fields": [
+    {
+      "name": "name_rating_city_country",
+      "type": {
+        "type": "string",
+        "arg.properties": {
+          "options": [
+            "Harbour Grand Kowloon_4.5_Hong Kong_China",
+            "The Peninsula Hong Kong_5_Hong Kong_China",
+            "Park Hotel Hong Kong_4_Hong Kong_China",
+            "The Plaza_5_New York_USA",
+            "Hotel Chelsea_4_New York_USA",
+            "The Bowery Hotel_4.5_New York_USA",
+            "The Savoy_5_London_UK",
+            "The Goring_5_London_UK",
+            "Kensington Hotel_4_London_UK"
+          ]
+        }
+      }
+    },
+    {
+      "name": "price",
+      "type": {
+        "type": "double",
+        "arg.properties": {
+          "range": {
+            "min": 100,
+            "max": 500
+          }
+        }
+      }
+    },
+    {
+      "name": "breakfast_included",
+      "type": {
+        "type": "string",
+        "arg.properties": {
+          "options": [
+            "true",
+            "false"
+          ]
+        }
+      }
+    },
+    {
+      "name": "update_timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis",
+        "arg.properties": {
+          "iteration": {
+            "start": 1609459200000,
+            "step": 100000
+          }
+        }
+      }
+    }
+  ]
+}
