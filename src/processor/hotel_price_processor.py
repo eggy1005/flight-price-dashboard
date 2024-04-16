@@ -84,26 +84,58 @@ def consume_data():
     tbl = tbl_env.from_path('FLIGHTPRICE')
 
     average_sql_processor = """
-        SELECT
-        F.airline,
-        SPLIT_INDEX(name_rating_city_country, '_', 0) as name, 
-        SPLIT_INDEX(name_rating_city_country, '_', 2) as city, 
-        SPLIT_INDEX(name_rating_city_country, '_', 3) as country, 
-        F.price,
-        H.price,
-        F.price + H.price as total, 
-        breakfast_included,
-        TO_TIMESTAMP_LTZ(F.update_timestamp, 3) AS readable_time
-        FROM
-        HOTELPRICE H JOIN FLIGHTPRICE F ON 
-        SPLIT_INDEX(name_rating_city_country, '_', 2) = F.arrival
-        """
+    SELECT AVG(F.price + H.price),
+    F.departure,
+    F.arrival,
+    TO_DATE(FROM_UNIXTIME(F.update_timestamp / 1000))
+    FROM
+    HOTELPRICE H JOIN FLIGHTPRICE F ON
+    SPLIT_INDEX(name_rating_city_country, '_', 2) = F.arrival
+    GROUP BY F.departure, F.arrival, TO_DATE(FROM_UNIXTIME(F.update_timestamp / 1000))
+    """
+
+
     average_price_tbl = tbl_env.sql_query(average_sql_processor)
-
-    tbl_env.execute_sql(average_sql_processor).print()
+    # tbl_env.execute_sql(average_sql_processor).print()
     print('\nProcess Sink Schema')
-    average_price_tbl.print_schema()
+    # average_price_tbl.print_schema()
 
+    sink_ddl = """
+            CREATE TABLE FLIGHT_HOTEL_PRICE_COMBINED (
+                TOTAL_PRICE DOUBLE,
+                DEPARTURE STRING,
+                ARRIVAL STRING,
+                ARRIVAL_DATE DATE,
+                PRIMARY KEY (DEPARTURE, ARRIVAL, ARRIVAL_DATE) NOT ENFORCED
+            ) WITH (
+                'connector' = 'upsert-kafka',
+                'topic' = 'flight_hotel_price_combined',
+                'properties.bootstrap.servers' = 'pkc-41wq6.eu-west-2.aws.confluent.cloud:9092',
+                'key.format' = 'json',
+                'value.format' = 'json',  
+                'properties.client.dns.lookup' ='use_all_dns_ips',
+                'properties.auto.offset.reset' = 'earliest',
+                'properties.security.protocol' = 'SASL_SSL',
+                'properties.sasl.mechanism' = 'PLAIN',
+                'properties.sasl.jaas.config' = 'org.apache.kafka.common.security.plain.PlainLoginModule required username="7AICBYXFYBHMF5PJ" password="yylYReFtxTnInxAeng6ubVTs+sMXGBi8Hz0AdAIO4eVB8/LXJHxKASyh51B0eWu8";'
+            )
+    """
+    tbl_env.execute_sql(sink_ddl)
+
+    total_price_query = """
+    INSERT INTO FLIGHT_HOTEL_PRICE_COMBINED
+    SELECT AVG(F.price + H.price),
+    F.departure,
+    F.arrival,
+    TO_DATE(FROM_UNIXTIME(F.update_timestamp / 1000))
+    FROM
+    HOTELPRICE H JOIN FLIGHTPRICE F ON
+    SPLIT_INDEX(name_rating_city_country, '_', 2) = F.arrival
+    GROUP BY F.departure, F.arrival, TO_DATE(FROM_UNIXTIME(F.update_timestamp / 1000))
+    """
+    combined_tbl = tbl_env.execute_sql(total_price_query).print()
+    # combined_tbl.print_schema()
+    # average_price_tbl.execute_insert('FLIGHT_HOTEL_PRICE_COMBINED').wait()
 
 if __name__ == '__main__':
     consume_data()
